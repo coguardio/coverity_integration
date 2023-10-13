@@ -1,0 +1,139 @@
+{
+  "name": "demo_cluster_1",
+  "customerId": "Demo Customer",
+  "machines":
+  {
+    "us-jfk-001": {
+      "id": "1",
+      "hostName": "us-jfk-001.demo-customer.com",
+      "externalIp": "127.0.0.1",
+      "internalIp": "127.0.0.1",
+      "services": {
+        "Kerberos": {
+          "version": "1.0",
+          "serviceName": "kerberos",
+          "configFileList": [
+            {
+              "fileName": "krb5.conf",
+              "defaultFileName": "krb5.conf",
+              "subPath": ".",
+              "configFileType": "krb"
+            },
+            {
+              "fileName": "kdc.conf",
+              "defaultFileName": "kdc.conf",
+              "subPath": ".",
+              "configFileType": "krb"
+            }
+          ]
+        },
+        "NGINX": {
+          "version": "1.13.0",
+          "serviceName": "nginx",
+          "configFileList": [
+            {
+              "fileName": "nginx.conf",
+              "defaultFileName": "nginx.conf",
+              "subPath": ".",
+              "configFileType": "nginx"
+            }
+          ]
+        },
+        "Postgres": {
+          "version": "9.6",
+          "serviceName": "postgres",
+          "configFileList": [
+            {
+              "fileName": "postgresql.conf",
+              "defaultFileName": "postgresql.conf",
+              "subPath": ".",
+              "configFileType": "properties"
+            },
+            {
+              "fileName": "pg_hba.conf",
+              "defaultFileName": "pg_hba.conf",
+              "subPath": ".",
+              "configFileType": "pg_hba"
+            }
+          ]
+        }
+      }
+    },
+    "us-jfk-002": {
+      "id": "2",
+      "hostName": "us-jfk-002.demo-customer.com",
+      "externalIp": "127.0.0.2",
+      "internalIp": "127.0.0.2",
+      "services": {
+        "MongoDb": {
+          "version": "4.4",
+          "serviceName": "mongodb",
+          "configFileList": [
+            {
+              "fileName": "mongod.conf",
+              "defaultFileName": "mongod.conf",
+              "subPath": ".",
+              "configFileType": "yaml"
+            }
+          ]
+        },
+        "Hadoop": {
+          "version": "3.2.1",
+          "serviceName": "hadoop",
+          "configFileList": [
+            {
+              "fileName": "hdfs-site.xml",
+              "defaultFileName": "hdfs-site.xml",
+              "subPath": ".",
+              "configFileType": "xml"
+            }
+          ]
+        },
+        "Apache": {
+          "version": "2.4",
+          "serviceName": "apache",
+          "configFileList": [
+            {
+              "fileName": "httpd.conf",
+              "defaultFileName": "httpd.conf",
+              "subPath": ".",
+              "configFileType": "httpd"
+            }
+          ]
+        },
+        "Kafka": {
+          "version": "2.6",
+          "serviceName": "kafka",
+          "configFileList": [
+            {
+              "fileName": "server.properties",
+              "defaultFileName": "server.properties",
+              "subPath": ".",
+              "configFileType": "properties"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "clusterServices": {
+    "CloudFormation": {
+      "version": "2010-09-09",
+      "serviceName": "cloudformation",
+      "configFileList": [
+        {
+          "fileName": "aws_template.yaml",
+          "defaultFileName": "aws_template.yaml",
+          "subPath": ".",
+          "configFileType": "aws_cfn",
+          "tags": [
+            {
+              "name": "clusterConfigFileType",
+              "value": "aws_cloud_formation"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
