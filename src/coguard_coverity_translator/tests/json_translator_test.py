@@ -208,8 +208,8 @@ class TestCommonFunctions(unittest.TestCase):
             'properties': {
                 'category': 'misconfiguration',
                 'type': 'kerberos_default_tgs_enctypes',
-                'local_effect': 'One should avoid the legacy TGS enctypes setting...',
-                'long_description': (
+                'localEffect': 'One should avoid the legacy TGS enctypes setting...',
+                'longDescription': (
                     'One should avoid the legacy TGS enctypes setting...\n\nRemediation: '
                     '`libdefaults` has a key called "default_tgs_enctypes"...\n\nSources:'
                     '\nhttps://web.mit.edu/kerberos/krb5-1.12/doc/admin/'
@@ -221,7 +221,7 @@ class TestCommonFunctions(unittest.TestCase):
                 {
                     'tag': 'kerberos_default_tgs_enctypes',
                     'description': 'One should avoid the legacy TGS enctypes setting...',
-                    'line': 0
+                    'line': 1
                 }
             ]
         }
