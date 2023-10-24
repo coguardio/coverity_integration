@@ -181,6 +181,7 @@ class TestCommonFunctions(unittest.TestCase):
         """
         Simple test with machines in the result.
         """
+        self.maxDiff = None
         coguard_result = {"failed": [
             {
                 "rule": {
@@ -194,20 +195,49 @@ class TestCommonFunctions(unittest.TestCase):
                         ]
                     }
                 },
+                "config_file": {
+                    "fileName": "krb5.conf",
+                    "subPath": ".",
+                    "configFileType": "krb"
+                },
                 "machine": "us-jfk-001",
                 "service": "Kerberos"
             }
         ]}
         path_to_files = "/tmp"
-        manifest = {}
+        manifest = {
+            "machines": {
+                "us-jfk-001": {
+                    "services": {
+                        "Kerberos": {
+                            "serviceName": "kerberos",
+                            "configFileList": [
+                                {
+                                    "fileName": "krb5.conf",
+                                    "defaultFileName": "krb5.conf",
+                                    "subPath": ".",
+                                    "configFileType": "krb"
+                                },
+                                {
+                                    "fileName": "kdc.conf",
+                                    "defaultFileName": "kdc.conf",
+                                    "subPath": ".",
+                                    "configFileType": "krb"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
         expected_result = {
             'checker': 'CG.KERBEROS_DEFAULT_TGS_ENCTYPES',
             'extra': 'kerberos_default_tgs_enctypes',
-            'file': '/tmp/foo.txt',
+            'file': '/tmp/us-jfk-001/Kerberos/krb5.conf',
             'subcategory': 'none',
             'properties': {
                 'category': 'misconfiguration',
-                'type': 'kerberos_default_tgs_enctypes',
+                'type': 'Kerberos misconfiguration',
                 'localEffect': 'One should avoid the legacy TGS enctypes setting...',
                 'longDescription': (
                     'One should avoid the legacy TGS enctypes setting...\n\nRemediation: '
@@ -219,18 +249,15 @@ class TestCommonFunctions(unittest.TestCase):
             },
             'events': [
                 {
-                    'tag': 'kerberos_default_tgs_enctypes',
+                    'tag': 'Kerberos misconfiguration',
                     'description': 'One should avoid the legacy TGS enctypes setting...',
                     'line': 1
                 }
             ]
         }
-        with unittest.mock.patch(
-                'coguard_coverity_translator.json_translator._extract_affected_files',
-                new_callable=lambda: lambda x, y, z: ['/tmp/foo.txt']):
-            result = json_translator._extract_issues_from_result(
-                path_to_files,
-                manifest,
-                coguard_result
-            )
-            self.assertListEqual(result, [expected_result])
+        result = json_translator._extract_issues_from_result(
+            path_to_files,
+            manifest,
+            coguard_result
+        )
+        self.assertListEqual(result, [expected_result])

@@ -3,9 +3,9 @@ This is the main module where we are translating our report-json format into
 Coveritie's expected format.
 """
 
+import logging
 from typing import List, Dict
 from pathlib import Path
-import os
 
 def _translate_file_to_coverity(
         path_to_files: Path,
@@ -71,23 +71,6 @@ def _get_sources_from_manifest(
             ))
     return result
 
-def _extract_affected_files(
-        path_to_files: Path,
-        machine: str,
-        service: str
-) -> List[str]:
-    """
-    Helper function for `_extract_issues_from_result`. We are heuristically
-    determining which files were affected by the given rule.
-    """
-    #TODO: Fix this to be more precise
-    result = []
-    pth_to_service = path_to_files.joinpath(machine if machine else "clusterServices").joinpath(service)
-    for root_dir, _, file_names in os.walk(pth_to_service.absolute()):
-        for file_name in file_names:
-            result.append(str(Path(root_dir).joinpath(file_name)))
-    return result
-
 def _extract_issues_from_result(
         path_to_files: Path,
         manifest: Dict,
@@ -100,6 +83,29 @@ def _extract_issues_from_result(
     """
     result = []
     for failed_entry in coguard_result.get("failed", []):
+        if not failed_entry.get("config_file", ""):
+            logging.warning("Could not deduce file from %s.",
+                            str(failed_entry))
+            continue
+        machine_id = failed_entry.get("machine", "")
+        service_id = failed_entry.get("service")
+        service_name = manifest.get(
+            "machines", {}
+        ).get(
+            machine_id, {}
+        ).get(
+            "services", {}
+        ).get(
+            service_id, {}
+        ).get("serviceName") if machine_id else manifest.get(
+            "clusterServices", {}
+        ).get(
+            service_id, {}
+        ).get("serviceName")
+        if not service_name:
+            logging.warning("Could not extract service for entry %s",
+                            failed_entry)
+            continue
         rule_identifier = failed_entry.get("rule", {}).get("name")
         rule_documentation = failed_entry.get(
             "rule", {}
@@ -116,7 +122,7 @@ def _extract_issues_from_result(
         sub_category = "none"
         properties = {}
         properties["category"] = "misconfiguration"
-        properties["type"] = rule_identifier # TODO
+        properties["type"] = f"{service_name.title()} misconfiguration"
         properties["localEffect"] = rule_documentation
         properties["longDescription"] = (
             f"{rule_documentation}\n\nRemediation: {rule_remediation}\n\nSources:\n{rule_sources}"
@@ -124,23 +130,29 @@ def _extract_issues_from_result(
         properties["impact"] = "Low" if severity < 3 else "Medium" if severity == 3 else "High"
         properties["issueKind"] = "QUALITY,SECURITY"
         event = {}
-        event["tag"] = rule_identifier #TODO
-        event["description"] = rule_documentation #TODO
-        event["line"] = 1 #TODO
-        files = _extract_affected_files(
-            path_to_files,
-            failed_entry.get("machine", ""),
-            failed_entry.get("service")
-        )
-        for file_name in files:
-            result.append({
-                "checker": checker,
-                "extra": extra,
-                "file": file_name,
-                "subcategory": sub_category,
-                "properties": properties,
-                "events": [event]
-            })
+        event["tag"] = f"{service_name.title()} misconfiguration"
+        event["description"] = rule_documentation
+        event["line"] = failed_entry.get('fromLine', 0) + 1
+        result.append({
+            "checker": checker,
+            "extra": extra,
+            "file": str(
+                Path(
+                    path_to_files
+                ).joinpath(
+                    failed_entry.get("machine", "clusterServices")
+                ).joinpath(
+                    failed_entry.get("service")
+                ).joinpath(
+                    failed_entry.get("config_file", {}).get("subPath", ".")
+                ).joinpath(
+                    failed_entry.get("config_file", {}).get("fileName")
+                )
+            ),
+            "subcategory": sub_category,
+            "properties": properties,
+            "events": [event]
+        })
     return result
 
 def translate_result_json(
