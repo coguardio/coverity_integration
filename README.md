@@ -15,7 +15,7 @@ installation instructions there.
 
 Example scripts are provided inside this repository, found
 [here](./example_scripts). You can copy the scripts and
-alter it for your respective use-case
+alter it for your respective use-case.
 
 # Roadmap items
 
@@ -23,7 +23,7 @@ alter it for your respective use-case
 
 In the
 [documentation](https://sig-product-docs.synopsys.com/bundle/coverity-docs/page/coverity-analysis/topics/import_file_format_and_reference.html#cim_TPIP_import_format_examples__cim_TPIT_json),
-The translated JSON requires to use forward-slashes independent on
+the translated JSON requires to use forward-slashes independent from the environment
 where the script is running. Right now, we are using the operating
 system path separator. [See the open issue for more
 details](https://github.com/coguardio/coverity_integration/issues/1).
@@ -31,7 +31,7 @@ details](https://github.com/coguardio/coverity_integration/issues/1).
 ## File-independent flags
 
 The third party integration toolkit requires currently a flag to be
-associated to a file. Some of our checks are independent of the file,
+associated to a file. Some of our checks are independent from a specific file,
 or are even just there because the file does not exist. Right now, we
 filter those checks out.
 
