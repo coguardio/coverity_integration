@@ -1,3 +1,8 @@
+"""
+The main module of this package. The relative path is with respect to the
+coguard cli project where it is integrated in.
+"""
+
 import argparse
 from coverity_integration.src.coguard_coverity_translator import entrypoint
 
