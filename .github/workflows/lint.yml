@@ -5,15 +5,14 @@ on:
     push:
 
 jobs:
-  run-unit-tests:
+  run-linting:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      - run: pip3 install pytest coverage
-      - run: make unit-test
+      - run: pip3 install pylint
+      - run: make lint
