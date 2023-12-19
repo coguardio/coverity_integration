@@ -5,7 +5,7 @@ It contains the entrypoint and any other related functionality.
 
 import json
 from pathlib import Path
-from coguard_coverity_translator.json_translator import translate_result_json
+from coverity_integration.src.coguard_coverity_translator.json_translator import translate_result_json
 
 def entrypoint(args):
     """

@@ -1,5 +1,5 @@
 import argparse
-from coguard_coverity_translator import entrypoint
+from coverity_integration.src.coguard_coverity_translator import entrypoint
 
 def main():
     """
